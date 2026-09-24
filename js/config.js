@@ -1,0 +1,17 @@
+/* Year-level planning assumptions. Review these values when official rules change. */
+const PENSION_CONFIG = Object.freeze({
+  GROUP_1_LAST_START_YEAR: 2012,
+  GROUP_2_FIRST_START_YEAR: 2013,
+  MIN_VESTING_SERVICE: 2,
+  EARLY_SERVICE_TEST: 25,
+  FULL_SERVICE_TEST: 30,
+  PENSION_AMOUNT_SERVICE_CAP: 35,
+  EARLY_REDUCTION_PER_YEAR: 0.05,
+  LIFETIME_LOW_RATE: 0.01375,
+  LIFETIME_HIGH_RATE: 0.02,
+  BRIDGE_RATE: 0.00625,
+  DEFAULT_ESTIMATED_AMPE: 74600,
+  RULES_REVIEWED_DATE: '2026-09-24'
+});
+if (typeof module !== 'undefined') module.exports = PENSION_CONFIG;
+
