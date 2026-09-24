@@ -1,0 +1,65 @@
+<!doctype html>
+<html lang="en-CA">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#153349">
+  <meta name="description" content="A private, browser-only estimate of your federal public service pension.">
+  <title>Federal Public Service Pension Estimator</title>
+  <link rel="stylesheet" href="styles.css">
+  <script src="js/config.js" defer></script>
+  <script src="js/pension-calculator.js" defer></script>
+  <script src="js/validation.js" defer></script>
+  <script src="js/ui.js" defer></script>
+  <script src="js/app.js" defer></script>
+</head>
+<body>
+  <main class="page" id="main">
+    <header class="page-header">
+      <p class="eyebrow">Independent planning tool</p>
+      <h1>Federal Public Service Pension Estimator</h1>
+      <p class="byline">Created by Kelvin</p>
+      <p class="intro">Estimate your pension from age, service, salary, and retirement year.</p>
+    </header>
+
+    <section class="notice" aria-labelledby="notice-heading">
+      <h2 id="notice-heading">Estimate only</h2>
+      <p>A planning estimate, not an official pension calculation. Confirm retirement decisions with your pension statement and the Pension Centre.</p>
+    </section>
+
+    <section class="form-card" aria-labelledby="form-heading">
+      <div class="section-heading"><div><p class="eyebrow">01 / Your details</p><h2 id="form-heading">Your estimate</h2></div><p class="required-note">All fields marked Required are needed to calculate an estimate.</p></div>
+      <div id="error-summary" class="error-summary" role="alert" tabindex="-1" hidden></div>
+      <form id="estimate-form" novalidate>
+        <div class="fields">
+          <div class="field"><label for="birthYear">Birth year <span class="required">Required</span></label><input id="birthYear" name="birthYear" type="text" inputmode="numeric" autocomplete="bday-year" maxlength="4" aria-describedby="birthYear-help birthYear-error"><p class="help" id="birthYear-help">Your age is estimated from whole years.</p><p class="field-error" id="birthYear-error"></p></div>
+          <div class="field"><label for="serviceStartYear">Federal service start year <span class="required">Required</span></label><input id="serviceStartYear" name="serviceStartYear" type="text" inputmode="numeric" maxlength="4" aria-describedby="serviceStartYear-help serviceStartYear-error"><p class="help" id="serviceStartYear-help">Used as a proxy for your pension contribution start year.</p><p class="field-error" id="serviceStartYear-error"></p></div>
+          <div class="field"><label for="retirementYear">Planned retirement year <span class="required">Required</span></label><input id="retirementYear" name="retirementYear" type="text" inputmode="numeric" maxlength="4" aria-describedby="retirementYear-help retirementYear-error"><p class="help" id="retirementYear-help">The year you plan to leave federal service.</p><p class="field-error" id="retirementYear-error"></p></div>
+          <div class="field"><label for="salary">Current annual salary <span class="required">Required</span></label><input id="salary" name="salary" type="text" inputmode="decimal" autocomplete="off" aria-describedby="salary-help salary-error"><p class="help" id="salary-help">Full-time CAD salary, for example $100,000. Used as a highest-five salary proxy.</p><p class="field-error" id="salary-error"></p></div>
+        </div>
+        <details class="advanced" id="advanced"><summary>Advanced options</summary><div class="field advanced-body"><label for="gapYears">Non-pensionable gap (years)</label><input id="gapYears" name="gapYears" type="number" inputmode="decimal" min="0" step="0.1" value="0" aria-describedby="gapYears-help gapYears-error"><p class="help" id="gapYears-help">Enter time between your start and retirement years that does not count toward pensionable service. Do not enter ordinary leave unless you know it was non-pensionable.</p><p class="field-error" id="gapYears-error"></p></div></details>
+        <div class="actions"><button class="primary-button" type="submit">Calculate estimate</button><button class="reset-button" type="reset">Start over</button></div>
+      </form>
+      <p class="privacy-line">Calculated on your device. Answers are not uploaded or saved.</p>
+    </section>
+
+    <section id="results" class="results" aria-live="polite" aria-atomic="false" hidden></section>
+
+    <section class="assumptions" aria-labelledby="assumptions-heading">
+      <details><summary id="assumptions-heading">Sources and assumptions</summary>
+      <div class="assumption-grid"><div><h3>What this estimate uses</h3><p>Your current annual salary stands in for your highest-paid five-year average. The estimated AMPE is <strong id="ampe-display">$74,600</strong>, using the 2026 CPP YMPE as a proxy. Actual AMPE averages the retirement year and four preceding years.</p><p>This website uses whole years. Official pension calculations may use exact dates, service to the nearest tenth of a year, salary records, and other plan details.</p><p>The bridge benefit normally ends on the first day of the month after your 65th birthday, or earlier if you become entitled to CPP/QPP disability benefits. This tool does not calculate disability benefits.</p></div><div><h3>What is not included</h3><p>No salary growth, future YMPE changes, indexing, CPP/QPP/OAS, taxes, insurance, or other retirement income is included. Buybacks, part-time work, special service rules, complex leave, disability, survivor benefits, and exact contribution dates are outside this estimate.</p><p>Actual pensionable service, your plan group, available options, and payments must be confirmed with official records.</p></div></div>
+      <details class="sources"><summary>Official sources <span class="source-count">(6)</span></summary><ol>
+        <li><a href="https://www.canada.ca/en/treasury-board-secretariat/services/pension-plan/plan-information/public-service-pension-glance.html" target="_blank" rel="noopener noreferrer">Public service pension at a glance <span class="sr-only">(opens in a new tab)</span></a></li>
+        <li><a href="https://www.canada.ca/en/treasury-board-secretariat/services/pension-plan/plan-information/public-service-pension-options.html" target="_blank" rel="noopener noreferrer">Public service pension options <span class="sr-only">(opens in a new tab)</span></a></li>
+        <li><a href="https://www.canada.ca/en/public-services-procurement/services/pay-pension/public-service-pension-plan/retired/entitlement-information-packages/2-more-years-pensionable-service/member-on-before-december-31-2012.html" target="_blank" rel="noopener noreferrer">Member on or before December 31, 2012 (Group 1) <span class="sr-only">(opens in a new tab)</span></a></li>
+        <li><a href="https://www.canada.ca/en/public-services-procurement/services/pay-pension/public-service-pension-plan/retired/entitlement-information-packages/2-more-years-pensionable-service/member-on-after-january-1-2013.html" target="_blank" rel="noopener noreferrer">Member on or after January 1, 2013 (Group 2) <span class="sr-only">(opens in a new tab)</span></a></li>
+        <li><a href="https://www.canada.ca/en/treasury-board-secretariat/services/pension-plan/active-members/pension-contribution-rates-major-public-sector-pension-plans.html" target="_blank" rel="noopener noreferrer">Pension contribution rates for the 3 major public sector pension plans <span class="sr-only">(opens in a new tab)</span></a></li>
+        <li><a href="https://www.canada.ca/en/treasury-board-secretariat/services/pension-plan/plan-information/annual-allowance.html" target="_blank" rel="noopener noreferrer">Annual Allowance <span class="sr-only">(opens in a new tab)</span></a></li>
+      </ol></details>
+      </details>
+    </section>
+    <footer><p>Privacy: Your answers are calculated locally in your browser. This website does not upload, save, or share them.</p><p><strong>Estimate only:</strong> This independent tool is not the Government of Canada and does not provide an official pension estimate or retirement advice. Pension rules and amounts can change. Confirm your situation with your pension records and the Government of Canada Pension Centre.</p><p class="review-date">Rules and sources reviewed: September 24, 2026.</p></footer>
+  </main>
+</body>
+</html>
+
