@@ -1,4 +1,12 @@
-# Design system: calm, focused reading
+# Current pension design candidate
+
+The owner-directed pension redesign is documented in [prototypes/pension/README.md](prototypes/pension/README.md). Its graphite palette, atmospheric background, sans-serif heading, three aligned panels, shared period switch, and reduced-motion-aware interactions supersede the reading-oriented visual defaults below **for this prototype only**. The root production page is not replaced by this design branch.
+
+The prototype's source and review history now live in Git. The earlier external preview folder is historical evidence, not a second editable source. Keep one preview URL and inspect the matching repository changes before promoting the candidate.
+
+---
+
+# Earlier design system: calm, focused reading
 
 ## Purpose and scope
 

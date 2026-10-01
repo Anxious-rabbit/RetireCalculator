@@ -4,7 +4,15 @@ A standalone, English-language planning calculator. Open `index.html` directly i
 
 ## Run the checks
 
-From this folder, run `node --test tests/pension-calculator.test.js`. The tests cover specification cases T01–T15, every annual-allowance formula branch, group and service boundaries, salary/AMPE boundaries, decimal gaps, and input validation.
+From this folder, run `node --test tests/*.test.js`. The tests cover specification cases T01–T15, every annual-allowance formula branch, group and service boundaries, salary/AMPE boundaries, decimal gaps, input validation, and presentation behavior.
+
+## Interactive design preview
+
+The current design candidate lives in [`prototypes/pension`](prototypes/pension/README.md), on the design branch. It is separate from the released root `index.html` and shares the existing calculation modules.
+
+Run `python3 scripts/preview.py`, then open <http://127.0.0.1:63047/prototypes/pension/>. The server binds only to localhost, disables caching, and redirects old root preview links to this one entry point. Unedited pages reload when source files change; pages with edited inputs show a reload notice so input isn't silently discarded. No form data is stored by the preview watcher.
+
+Use Git commits and diffs to review design revisions. URL query parameters do not select versions. See the prototype README for optional browser checks and the scope of this candidate.
 
 ## Calculation scope
 
