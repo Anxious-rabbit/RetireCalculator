@@ -9,17 +9,15 @@ from pathlib import Path
 from urllib.parse import urlsplit
 
 ROOT = Path(__file__).resolve().parent.parent
-DESIGN = ROOT / "prototypes" / "pension"
 ENTRY = "/prototypes/pension/"
 
 
 def revision():
     digest = hashlib.sha256()
-    for folder in (DESIGN, ROOT / "js"):
-        for path in sorted(folder.glob("*")):
-            if path.suffix in {".html", ".css", ".js"}:
-                digest.update(path.relative_to(ROOT).as_posix().encode())
-                digest.update(path.read_bytes())
+    paths = [ROOT / "index.html", ROOT / "styles.css", *(ROOT / "js").glob("*.js")]
+    for path in sorted(paths):
+        digest.update(path.relative_to(ROOT).as_posix().encode())
+        digest.update(path.read_bytes())
     return digest.hexdigest()[:12]
 
 
@@ -55,7 +53,9 @@ class PreviewHandler(SimpleHTTPRequestHandler):
             return
         if path in {ENTRY, ENTRY + "index.html"}:
             # The watcher exists only in the local preview response, not the app.
-            body = (DESIGN / "index.html").read_text()
+            body = (ROOT / "index.html").read_text()
+            body = body.replace('<html lang="en-CA">', '<html lang="en-CA" data-preview="true">')
+            body = body.replace("<head>", '<head><base href="/">')
             watcher = '<script src="/scripts/preview-reload.js" data-revision="' + revision() + '"></script>'
             body = body.replace("</body>", watcher + "</body>").encode()
             self.send_response(200)

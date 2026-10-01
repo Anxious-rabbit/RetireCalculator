@@ -1,56 +1,45 @@
 (() => {
-  const form = document.getElementById('estimate-form');
-  const results = document.getElementById('results');
-  const summary = document.getElementById('error-summary');
-  const fields = ['birthYear', 'serviceStartYear', 'retirementYear', 'salary', 'gapYears'];
-  const rawValues = () => Object.fromEntries(fields.map(key => [key, form.elements[key].value]));
-  function clearErrors() {
-    summary.hidden = true;
-    summary.textContent = '';
-    for (const key of fields) {
-      form.elements[key].removeAttribute('aria-invalid');
-      document.getElementById(`${key}-error`).textContent = '';
-    }
-  }
-  function showErrors(errors) {
-    const names = { birthYear: 'Birth year', serviceStartYear: 'Federal service start year', retirementYear: 'Planned departure year', salary: 'Current annual salary', gapYears: 'Non-pensionable gap (years)' };
-    const keys = Object.keys(errors);
-    summary.innerHTML = `<p><strong>Please correct ${keys.length === 1 ? 'this field' : 'these fields'}:</strong> ${keys.map(key => names[key]).join(', ')}.</p>`;
-    summary.hidden = false;
-    for (const key of keys) {
-      form.elements[key].setAttribute('aria-invalid', 'true');
-      document.getElementById(`${key}-error`).textContent = errors[key];
-    }
-    if (errors.gapYears) document.getElementById('advanced').open = true;
-    form.elements[keys[0]].focus();
-  }
-  form.addEventListener('submit', event => {
-    event.preventDefault();
-    clearErrors();
-    const checked = PensionValidation.validate(rawValues());
-    if (!checked.valid) {
-      document.getElementById('result-status').textContent = '';
-      results.hidden = true;
-      results.innerHTML = '';
-      showErrors(checked.errors);
-      return;
-    }
-    const result = PensionCalculator.estimate(checked.values);
-    results.innerHTML = PensionUI.render(result, checked.values);
-    results.hidden = false;
-    const heading = document.getElementById('results-heading');
-    heading.focus({ preventScroll: true });
-    document.getElementById('result-status').textContent = `Estimate calculated for departure in ${checked.values.retirementYear}. ${result.group}, approximately ${result.pensionableService.toFixed(1)} years of pensionable service.`;
-    results.scrollIntoView({ block: 'start', behavior: 'instant' });
-  });
-  form.addEventListener('reset', () => {
-    clearErrors();
-    results.hidden = true;
-    results.innerHTML = '';
-    document.getElementById('result-status').textContent = '';
-    document.getElementById('advanced').open = false;
-    setTimeout(() => document.getElementById('birthYear').focus(), 0);
-  });
-  document.getElementById('ampe-display').textContent = PensionUI.money.format(PENSION_CONFIG.DEFAULT_ESTIMATED_AMPE);
+'use strict';
+const keys=['birthYear','serviceStartYear','retirementYear','salary','gapYears'];
+const form=document.getElementById('form'),output=document.getElementById('output'),stale=document.getElementById('stale'),heading=document.getElementById('result-heading'),calculate=document.getElementById('calculate');
+const calculationContext=document.getElementById('calculation-context');
+const fixture={birthYear:'1980',serviceStartYear:'2015',retirementYear:'2040',salary:'100,000',gapYears:'0'};
+const money=new Intl.NumberFormat('en-CA',{style:'currency',currency:'CAD',maximumFractionDigits:0});
+document.getElementById('assumed-ampe').textContent=money.format(PENSION_CONFIG.DEFAULT_ESTIMATED_AMPE);
+let last=null;let renderDelay=0;
+function setCalculateLabel(label){calculate.querySelector('[data-action-label]').textContent=label}
+let selectedPeriod="month";
+const reducedMotion=matchMedia("(prefers-reduced-motion: reduce)");
+reducedMotion.addEventListener("change",()=>{if(reducedMotion.matches)output.getAnimations({subtree:true}).forEach(animation=>animation.cancel())});
+const moneyMarkup=annual=>'<money-counter delay="'+renderDelay+'" data-annual="'+annual+'" value="'+(selectedPeriod==="month"?annual/12:annual)+'"></money-counter>';
+function raw(){return Object.fromEntries(keys.map(k=>[k,form.elements[k].value]))}
+function clearErrors(){document.getElementById('error-summary').hidden=true;for(const k of keys){form.elements[k].removeAttribute('aria-invalid');document.getElementById(k+'-error').textContent=''}}
+function placeholder(error=false){document.getElementById('compute-action').cancel();document.querySelector('period-switch').hidden=true;heading.textContent='Estimate';output.innerHTML='<div class="placeholder"><h3>'+(error?'A quick correction.':'What comes next?' )+'</h3><p>'+(error?'Check the marked fields.':'Fill in your details to begin.')+'</p></div>';calculationContext.hidden=true;calculationContext.textContent='';stale.hidden=true;last=null;setCalculateLabel('Calculate');document.getElementById('status').textContent=''}
+function render(values,animate=false){renderDelay=animate&&!reducedMotion.matches?300:0;const detailsExpanded=output.querySelector('disclosure-group')?.hasAttribute('expanded')||false;const previous=[...output.querySelectorAll('money-counter')].map(n=>n.current);document.querySelector('period-switch').hidden=false;const options=PensionCalculator.earliestPensionOptions(values),r=options.departure;
+heading.textContent='Estimate';
+const cards=options.rows.map(row=>'<article class="option"><h3 class="option-kind">'+row.type.replace(' pension','')+'</h3><p class="start-age">Age '+row.age+' · '+row.year+'</p><p class="amount money-line">'+moneyMarkup(row.totalAnnual)+' <small class="period-unit">/ '+selectedPeriod+'</small></p><div class="after65">From age '+Math.max(65,row.age)+'<strong class="money-line">'+moneyMarkup(row.lifetimeAnnual)+' <small class="period-unit">/ '+selectedPeriod+'</small></strong></div><p class="reduction">'+(row.reductionPercent?(row.reductionPercent*100).toFixed(1)+'% permanent reduction':'No reduction')+'</p><dl class="breakdown" data-disclosure-panel hidden><div><dt>Lifetime</dt><dd class="money-line">'+moneyMarkup(row.lifetimeAnnual)+' <small class="period-unit">/ '+selectedPeriod+'</small></dd></div><div><dt>Bridge · until 65</dt><dd class="money-line">'+(row.bridgeAnnual>0?moneyMarkup(row.bridgeAnnual)+' <small class="period-unit">/ '+selectedPeriod+'</small>':'Not payable')+'</dd></div></dl></article>').join('');
+const contextMarkup='<p class="result-context">'+r.pensionableService.toFixed(1)+' years’ service</p>';
+output.innerHTML=(cards?'<disclosure-group'+(detailsExpanded?' expanded':'')+'><div class="options">'+cards+'</div><div class="comparison-toolbar">'+contextMarkup+'<button type="button" class="breakdown-toggle" data-disclosure-trigger aria-expanded="false"><span class="breakdown-label">Breakdown</span><svg class="toggle-icon" viewBox="0 0 16 16" width="16" height="16" aria-hidden="true"><path d="M8 3v10M3 8h10" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg></button></div></disclosure-group>':'<div class="placeholder"><p>'+options.reason+'</p></div>'+contextMarkup);
+calculationContext.textContent='Last calculation: '+money.format(values.salary)+' salary · '+r.group+' (estimated).';calculationContext.hidden=false;
+output.querySelectorAll('money-counter').forEach((node,i)=>{if(previous[i]!==undefined){const target=Number(node.getAttribute('value'));node.current=animate&&Math.round(previous[i])===Math.round(target)?0:previous[i];node.value=target}});
+last=JSON.stringify(raw());stale.hidden=true;setCalculateLabel('Calculate');document.getElementById('status').textContent='Estimate updated for departure in '+values.retirementYear+'.';}
+function submit(focus=true){clearErrors();const checked=PensionValidation.validate(raw());if(Number(raw().birthYear)>Number(raw().serviceStartYear)&&!checked.errors.birthYear&&!checked.errors.serviceStartYear)checked.errors.serviceStartYear='Service cannot start before your birth year.';
+if(Object.keys(checked.errors).length){placeholder(true);const summary=document.getElementById('error-summary');summary.replaceChildren(document.createTextNode('Please correct the highlighted details.'));summary.hidden=false;for(const[k,message]of Object.entries(checked.errors)){form.elements[k].setAttribute('aria-invalid','true');document.getElementById(k+'-error').textContent=message}if(focus)form.elements[Object.keys(checked.errors)[0]].focus();return}render(checked.values,focus);if(focus){heading.focus({preventScroll:true});document.getElementById('compute-action').play(document.getElementById('results'))}}
+form.onsubmit=e=>{e.preventDefault();submit()};form.oninput=()=>{if(last!==null){const changed=JSON.stringify(raw())!==last;stale.hidden=!changed;setCalculateLabel(changed?'Recalculate':'Calculate')}};
+form.onreset=e=>{e.preventDefault();for(const k of keys)form.elements[k].value=k==='gapYears'?'0':'';clearErrors();placeholder();document.getElementById('status').textContent='Answers and estimate cleared.';form.elements.birthYear.focus()};
+document.getElementById('recalculate').onclick=()=>submit();
+document.querySelector('period-switch').addEventListener('period-change',event=>{
+selectedPeriod=event.detail.value;
+for(const node of output.querySelectorAll('money-counter')){node.setAttribute('delay','0');node.value=Number(node.dataset.annual)/(selectedPeriod==='month'?12:1)}
+for(const node of output.querySelectorAll('.period-unit'))node.textContent='/ '+selectedPeriod;
+document.getElementById('status').textContent='Amounts shown per '+selectedPeriod+'.';
+});
+function setState(state){clearErrors();for(const k of keys)form.elements[k].value=fixture[k];if(state==='empty'){for(const k of keys)form.elements[k].value=k==='gapYears'?'0':'';placeholder();return}if(state==='error'){form.elements.birthYear.value='2020';submit(false);return}submit(false);if(state==='stale'){form.elements.salary.value='110,000';form.dispatchEvent(new Event('input'))}}
+// Synthetic states exist only in the local preview response.
+if (document.documentElement.dataset.preview === 'true') {
+  window.setState = setState;
+  setState('result');
+} else {
+  placeholder();
+}
 })();
-

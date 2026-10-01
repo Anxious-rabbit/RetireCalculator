@@ -1,77 +1,33 @@
 <!doctype html>
-<html lang="en-CA">
-<head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="theme-color" content="#F5F6F4">
-  <meta name="description" content="A private, browser-only estimate of your federal public service pension.">
-  <title>Federal Public Service Pension Estimator</title>
-  <script src="js/preferences.js"></script>
-  <link rel="stylesheet" href="styles.css">
-  <script src="js/config.js" defer></script>
-  <script src="js/pension-calculator.js" defer></script>
-  <script src="js/validation.js" defer></script>
-  <script src="js/ui.js" defer></script>
-  <script src="js/app.js" defer></script>
-</head>
-<body>
-  <a class="skip-link" href="#form-heading">Skip to calculator</a>
-  <main class="page" id="main">
-    <div class="page-tools">
-      <details class="reading-settings" id="reading-settings" hidden>
-        <summary>Display</summary>
-        <div class="settings-body">
-          <div class="setting-field"><label for="appearance">Appearance</label><select id="appearance"><option value="system">System</option><option value="light">Light</option><option value="dark">Dark</option></select></div>
-          <div class="setting-field"><label for="text-size">Text size</label><select id="text-size"><option value="default">Default</option><option value="large">Large</option><option value="extra-large">Extra large</option></select></div>
-          <p class="help">Preferences saved locally. Answers never saved.</p>
-        </div>
-      </details>
-    </div>
-    <header class="page-header">
-      <h1>Federal Public Service Pension Estimator</h1>
-      <p class="intro">When you can start. What you could receive.</p>
-    </header>
-
-    <section class="notice" aria-labelledby="notice-heading">
-      <h2 id="notice-heading">Estimate only</h2>
-      <p>Confirm with your pension records or the Pension Centre.</p>
-    </section>
-
-    <section class="form-card" aria-labelledby="form-heading">
-      <div class="section-heading"><h2 id="form-heading" tabindex="-1">Your details</h2></div>
-      <div id="error-summary" class="error-summary" role="alert" tabindex="-1" hidden></div>
-      <form id="estimate-form" novalidate>
-        <div class="fields">
-          <div class="field"><label for="birthYear">Birth year <span class="required">Required</span></label><input id="birthYear" name="birthYear" type="text" inputmode="numeric" autocomplete="bday-year" maxlength="4" aria-describedby="birthYear-help birthYear-error"><p class="help" id="birthYear-help">Age is approximate.</p><p class="field-error" id="birthYear-error"></p></div>
-          <div class="field"><label for="serviceStartYear">Federal service start year <span class="required">Required</span></label><input id="serviceStartYear" name="serviceStartYear" type="text" inputmode="numeric" maxlength="4" aria-describedby="serviceStartYear-help serviceStartYear-error"><p class="help" id="serviceStartYear-help">Pension contribution date may differ.</p><p class="field-error" id="serviceStartYear-error"></p></div>
-          <div class="field"><label for="retirementYear">Planned departure year <span class="required">Required</span></label><input id="retirementYear" name="retirementYear" type="text" inputmode="numeric" maxlength="4" aria-describedby="retirementYear-help retirementYear-error"><p class="help" id="retirementYear-help">Payments may begin later.</p><p class="field-error" id="retirementYear-error"></p></div>
-          <div class="field"><label for="salary">Current annual salary <span class="required">Required</span></label><input id="salary" name="salary" type="text" inputmode="decimal" autocomplete="off" aria-describedby="salary-help salary-error"><p class="help" id="salary-help">Full-time CAD. Highest-five salary proxy.</p><p class="field-error" id="salary-error"></p></div>
-        </div>
-        <details class="advanced" id="advanced"><summary>Adjust service</summary><div class="field advanced-body"><label for="gapYears">Non-pensionable gap (years)</label><input id="gapYears" name="gapYears" type="number" inputmode="decimal" min="0" step="0.1" value="0" aria-describedby="gapYears-help gapYears-error"><p class="help" id="gapYears-help">Exclude only time you know was non-pensionable.</p><p class="field-error" id="gapYears-error"></p></div></details>
-        <div class="actions"><button class="primary-button" type="submit"><span>Calculate estimate</span><svg class="icon-directional" width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M3 10h13M11 5l5 5-5 5"/></svg></button><button class="reset-button" type="reset">Start over</button></div>
-      </form>
-      <p class="privacy-line">Private. Calculated on your device.</p>
-    </section>
-
-    <p id="result-status" class="sr-only" role="status"></p>
-    <section id="results" class="results" aria-labelledby="results-heading" hidden></section>
-
-    <section class="assumptions" aria-labelledby="assumptions-heading">
-      <details><summary id="assumptions-heading">Disclaimer &amp; sources</summary>
-      <div class="disclaimer-copy"><p>This independent tool is not the Government of Canada and does not provide an official pension estimate or retirement advice. Confirm your situation with your pension records and the Government of Canada Pension Centre.</p><p>Your answers stay in browser memory. They are never uploaded, saved, or shared. Only appearance and text-size preferences may be saved locally.</p></div>
-      <div class="assumption-grid"><div><h3>What this estimate uses</h3><p>Your current annual salary stands in for your highest-paid five-year average. The estimated AMPE is <strong id="ampe-display">$74,600</strong>, using the 2026 CPP YMPE as a proxy. Actual AMPE averages the retirement year and four preceding years.</p><p>This website uses whole years. Official pension calculations may use exact dates, service to the nearest tenth of a year, salary records, and other plan details.</p><p>The bridge benefit normally ends on the first day of the month after your 65th birthday, or earlier if you become entitled to CPP/QPP disability benefits. This tool does not calculate disability benefits.</p></div><div><h3>What is not included</h3><p>No salary growth, future YMPE changes, indexing, CPP/QPP/OAS, taxes, insurance, or other retirement income is included. Buybacks, part-time work, special service rules, complex leave, disability, survivor benefits, and exact contribution dates are outside this estimate.</p><p>Actual pensionable service, your plan group, available options, and payments must be confirmed with official records.</p></div></div>
-      <details class="sources"><summary>Official sources <span class="source-count">(6)</span></summary><ol>
-        <li><a href="https://www.canada.ca/en/treasury-board-secretariat/services/pension-plan/plan-information/public-service-pension-glance.html" target="_blank" rel="noopener noreferrer">Public service pension at a glance <span class="sr-only">(opens in a new tab)</span></a></li>
+<html lang="en-CA"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="theme-color" content="#101113"><meta name="description" content="A private, browser-only estimate of your federal public service pension."><title>Federal Public Service Pension Estimator</title>
+<link rel="stylesheet" href="styles.css"><script src="js/money-counter.js" defer></script><script src="js/ambient-scene.js" defer></script><script src="js/components.js" defer></script><script src="js/calculate-action.js" defer></script><script src="js/info-dialog.js" defer></script><script src="js/config.js"></script><script src="js/pension-calculator.js"></script><script src="js/validation.js"></script></head>
+<body><ambient-scene></ambient-scene><a class="skip" href="#birthYear">Skip to your details</a><main class="page">
+<header class="page-header"><h1>Pension<span>.</span></h1><period-switch data-value="month" aria-label="Amount period"></period-switch></header>
+<div class="workspace"><section class="input-panel" aria-labelledby="input-heading"><div class="input-title"><h2 id="input-heading">You</h2><button class="reset" type="reset" form="form">Reset</button></div><form id="form" novalidate><div id="error-summary" class="error-summary" role="alert" hidden></div>
+<div class="fields-grid"><div class="field"><label for="birthYear">Birth year</label><input id="birthYear" name="birthYear" inputmode="numeric" maxlength="4" required aria-describedby="birthYear-help birthYear-error"><span class="helper" id="birthYear-help">Used to approximate your age.</span><p class="field-error" id="birthYear-error"></p></div>
+<div class="field"><label for="serviceStartYear">Joined</label><input id="serviceStartYear" name="serviceStartYear" inputmode="numeric" maxlength="4" required aria-describedby="serviceStartYear-help serviceStartYear-error"><span class="helper" id="serviceStartYear-help">Your pension contribution date may differ.</span><p class="field-error" id="serviceStartYear-error"></p></div>
+<div class="field"><label for="retirementYear">Leave</label><input id="retirementYear" name="retirementYear" inputmode="numeric" maxlength="4" required aria-describedby="retirementYear-help retirementYear-error"><span class="helper" id="retirementYear-help">Leaving work and starting payments can be different dates.</span><p class="field-error" id="retirementYear-error"></p></div>
+<div class="field"><label for="salary">Salary / yr</label><input aria-label="Salary / year · CAD" id="salary" name="salary" inputmode="decimal" required aria-describedby="salary-help salary-error"><span class="helper" id="salary-help">Full-time salary, used as a highest-five average proxy.</span><p class="field-error" id="salary-error"></p></div>
+</div><div class="field gap-field">
+<label for="gapYears">Time away</label>
+<div class="input-unit"><input id="gapYears" name="gapYears" aria-label="Time away (years)" inputmode="decimal" value="0" aria-describedby="gapYears-help gapYears-error" autocomplete="off"><span aria-hidden="true">yr</span></div>
+<span class="helper" id="gapYears-help">Non-pensionable years. Decimals are allowed.</span><p class="field-error" id="gapYears-error"></p>
+</div>
+<calculate-action id="compute-action"><button class="primary" type="submit" id="calculate"><span data-action-label>Calculate</span><span class="action-thumb" aria-hidden="true"><svg viewBox="0 0 24 24" width="20" height="20" fill="none"><path d="M5 12h14m-6-6 6 6-6 6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span></button></calculate-action><p class="privacy">No account. No saved answers.</p></form></section>
+<section class="results" id="results" aria-labelledby="result-heading"><h2 class="sr-only" id="result-heading" tabindex="-1">Estimate</h2><div id="output"></div><div id="stale" class="stale" role="status" hidden><p>Changed. Calculate to refresh.</p><button type="button" id="recalculate">Recalculate</button></div></section></div>
+<footer><p>Independent estimate · CAD</p><div class="rules-note"><p>Rules reviewed Sep 24, 2026</p><button class="info-button" type="button" data-dialog-trigger="assumptions-dialog" aria-label="Assumptions and sources" aria-haspopup="dialog" aria-controls="assumptions-dialog"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" aria-hidden="true"><circle cx="12" cy="12" r="8.5" stroke="currentColor" stroke-width="1.5"/><path d="M12 11v6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/><circle cx="12" cy="7.5" r="1" fill="currentColor"/></svg></button></div></footer><p class="sr-only" id="status" role="status"></p></main>
+<dialog class="info-dialog" id="assumptions-dialog" aria-labelledby="assumptions-title">
+<div class="dialog-header"><h2 id="assumptions-title">Assumptions &amp; sources</h2><button class="dialog-close" type="button" data-dialog-close aria-label="Close assumptions" autofocus><svg width="18" height="18" viewBox="0 0 18 18" fill="none" aria-hidden="true"><path d="m5 5 8 8m0-8-8 8" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg></button></div>
+<div class="dialog-body">
+<p class="calculation-context" id="calculation-context" hidden></p>
+<section><h3>Payment amounts</h3><p>Early payments stay reduced after 65. The reduction percentage shown on each card is permanent. Pensionable service stays fixed after departure.</p><p>The temporary bridge normally ends on the first day of the month after your 65th birthday, or earlier for CPP/QPP disability entitlement.</p></section>
+<section><h3>Calculation assumptions</h3><p>Whole-year approximation. Current salary is a highest-five average proxy; estimated AMPE uses <span id="assumed-ampe"></span>, the 2026 CPP YMPE as a proxy. Actual AMPE averages the retirement year and four preceding years. Amounts are rounded.</p><p>No salary growth, future YMPE changes, indexing, CPP/QPP/OAS, taxes, insurance or other income is included. Exact dates, part-time work, buybacks, special service rules, disability and survivor benefits are outside this estimate.</p></section>
+<section><h3>Official plan information</h3><p>This independent tool is not the Government of Canada and does not provide an official pension estimate or retirement advice. Confirm your pension contribution date, plan group, pensionable service and available options with your pension records or the Government of Canada Pension Centre.</p><ol class="source-list"><li><a href="https://www.canada.ca/en/treasury-board-secretariat/services/pension-plan/plan-information/public-service-pension-glance.html" target="_blank" rel="noopener noreferrer">Public service pension at a glance <span class="sr-only">(opens in a new tab)</span></a></li>
         <li><a href="https://www.canada.ca/en/treasury-board-secretariat/services/pension-plan/plan-information/public-service-pension-options.html" target="_blank" rel="noopener noreferrer">Public service pension options <span class="sr-only">(opens in a new tab)</span></a></li>
         <li><a href="https://www.canada.ca/en/public-services-procurement/services/pay-pension/public-service-pension-plan/retired/entitlement-information-packages/2-more-years-pensionable-service/member-on-before-december-31-2012.html" target="_blank" rel="noopener noreferrer">Member on or before December 31, 2012 (Group 1) <span class="sr-only">(opens in a new tab)</span></a></li>
         <li><a href="https://www.canada.ca/en/public-services-procurement/services/pay-pension/public-service-pension-plan/retired/entitlement-information-packages/2-more-years-pensionable-service/member-on-after-january-1-2013.html" target="_blank" rel="noopener noreferrer">Member on or after January 1, 2013 (Group 2) <span class="sr-only">(opens in a new tab)</span></a></li>
         <li><a href="https://www.canada.ca/en/treasury-board-secretariat/services/pension-plan/active-members/pension-contribution-rates-major-public-sector-pension-plans.html" target="_blank" rel="noopener noreferrer">Pension contribution rates for the 3 major public sector pension plans <span class="sr-only">(opens in a new tab)</span></a></li>
-        <li><a href="https://www.canada.ca/en/treasury-board-secretariat/services/pension-plan/plan-information/annual-allowance.html" target="_blank" rel="noopener noreferrer">Annual Allowance <span class="sr-only">(opens in a new tab)</span></a></li>
-      </ol></details>
-      </details>
-    </section>
-    <footer><p class="review-date">Rules reviewed: September 24, 2026</p><p class="byline">Created by Kelvin</p></footer>
-  </main>
-</body>
-</html>
-
+        <li><a href="https://www.canada.ca/en/treasury-board-secretariat/services/pension-plan/plan-information/annual-allowance.html" target="_blank" rel="noopener noreferrer">Annual Allowance <span class="sr-only">(opens in a new tab)</span></a></li></ol></section>
+<section><h3>Privacy</h3><p>Your answers and results stay in browser memory. They are never uploaded, saved or shared. No account is required.</p><p>Created by Kelvin</p></section>
+</div></dialog>
+<script src="js/app.js" defer></script></body></html>

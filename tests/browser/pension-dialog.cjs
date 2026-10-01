@@ -26,6 +26,7 @@ const { mkdir } = require('node:fs/promises');
         const before = await geometry();
         await trigger.click();
         assert(await dialog.isVisible());
+        assert.equal(await page.locator('.dialog-body').evaluate(el => el.scrollTop), 0);
         assert.deepEqual(await geometry(), before, 'Opening must not move or resize the page');
         const state = await dialog.evaluate(el => {
           const box = el.getBoundingClientRect();

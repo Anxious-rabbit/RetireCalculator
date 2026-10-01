@@ -7,6 +7,7 @@ for (const trigger of document.querySelectorAll('[data-dialog-trigger]')) {
     if (dialog.open) return;
     document.documentElement.classList.add('dialog-open');
     dialog.showModal();
+    dialog.querySelector('.dialog-body').scrollTop = 0;
   });
   dialog.querySelector('[data-dialog-close]').addEventListener('click', () => dialog.close());
   dialog.addEventListener('close', () => {

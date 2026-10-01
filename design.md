@@ -1,8 +1,8 @@
-# Current pension design candidate
+# Current pension design
 
-The owner-directed pension redesign is documented in [prototypes/pension/README.md](prototypes/pension/README.md). Its graphite palette, atmospheric background, sans-serif heading, three aligned panels, shared period switch, and reduced-motion-aware interactions supersede the reading-oriented visual defaults below **for this prototype only**. The root production page is not replaced by this design branch.
+The owner-approved pension redesign is now the root application. Its graphite palette, atmospheric background, sans-serif heading, aligned form and result panels, shared period switch, and reduced-motion-aware interactions supersede the earlier reading-oriented visual defaults below. Assumptions and all six official sources live in the footer information dialog. The current design uses a fixed dark appearance and browser text zoom; the previous appearance settings are not part of this interface.
 
-The prototype's source and review history now live in Git. The earlier external preview folder is historical evidence, not a second editable source. Keep one preview URL and inspect the matching repository changes before promoting the candidate.
+Edit `index.html`, `styles.css`, and `js/`. The local preview uses the same source with synthetic review data; the published calculator starts empty. [Preview notes](prototypes/pension/README.md) record the interaction decisions and verification scope. The calculation modules remain unchanged.
 
 ---
 
