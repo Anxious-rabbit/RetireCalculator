@@ -2,15 +2,15 @@ const PensionUI = (() => {
   const money = new Intl.NumberFormat('en-CA', { style: 'currency', currency: 'CAD', maximumFractionDigits: 0 });
   const years = value => `${value.toFixed(1)} years`;
   const reduction = value => value == null ? 'Not estimated' : `${(value * 100).toFixed(1)}%`;
-  const amount = value => `<span class="amount-pair"><span class="year-amount"><strong>${money.format(value)}</strong>/year</span><span class="amount-or">or</span><span class="month-amount">${money.format(value / 12)}/month</span></span>`;
+  const amount = value => `<span class="amount-pair"><span class="year-amount"><strong>${money.format(value)}</strong> <small>/ year</small></span><span class="month-amount">or ${money.format(value / 12)} / month</span></span>`;
   const optionLabel = option => ({ immediate: 'Unreduced pension', annualAllowance: 'Reduced pension', deferred: 'No immediate payment', notEligible: 'No monthly estimate' })[option];
   const comparisonLabel = option => ({ immediate: 'Unreduced', annualAllowance: 'Reduced', deferred: 'Deferred / not estimated immediately', notEligible: 'Not eligible for monthly estimate' })[option];
 
   function optionMessage(r) {
-    if (r.option === 'immediate') return 'You may qualify for an unreduced pension starting when you leave.';
-    if (r.option === 'annualAllowance') return `You may qualify for a pension starting when you leave, with an estimated ${reduction(r.reductionPercent)} permanent reduction to the lifetime portion.`;
-    if (r.option === 'notEligible') return 'This estimate shows less than 2 years of pensionable service. The usual monthly pension options are not estimated here.';
-    return 'No monthly pension is estimated to start in your departure year. See the possible later payment ages above.';
+    if (r.option === 'immediate') return 'Unreduced payments may start when you leave.';
+    if (r.option === 'annualAllowance') return `${reduction(r.reductionPercent)} permanent reduction to the lifetime portion. Bridge remains unreduced.`;
+    if (r.option === 'notEligible') return 'Less than 2 years of service. No monthly pension estimated.';
+    return 'Payments may begin later. Your options are below.';
   }
   function warnings(r, input) {
     const items = ['Your actual plan group depends on when you began pension contributions, which may differ from your federal service start year.'];
@@ -24,10 +24,6 @@ const PensionUI = (() => {
     return items;
   }
   const escape = value => String(value).replace(/[&<>"']/g, character => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[character]));
-  function incomeCard(title, annual, helper) {
-    const available = annual != null;
-    return `<article class="income-card"><h3>${title}</h3><p class="headline-amount">${available ? amount(annual) : 'Not applicable'}</p><p class="help">${helper}</p></article>`;
-  }
   function scenario(input, year) {
     if (year <= input.serviceStartYear || year <= input.birthYear || input.gapYears > year - input.serviceStartYear) return null;
     return PensionCalculator.estimate({ ...input, retirementYear: year });
@@ -41,15 +37,15 @@ const PensionUI = (() => {
     if (r.option === 'deferred') return `No payment starting this year is estimated; a deferred pension may start at age ${r.normalAge}.`;
     return '';
   }
-  function earliestTable(input) {
+  function earliestOptions(input) {
     const options = PensionCalculator.earliestPensionOptions(input);
     const departure = options.departure;
     const rows = options.rows;
-    const intro = `Assumes you leave in ${input.retirementYear} with ${years(departure.pensionableService)} of pensionable service. Service does not increase after you leave.`;
-    const body = rows.length ? `<div class="earliest-table-wrap"><table class="earliest-table"><thead><tr><th scope="col">Pension option</th><th scope="col">Earliest age · year</th><th scope="col">Lifetime reduction</th><th scope="col">Amount at start</th></tr></thead><tbody>${rows.map((row, index) => `<tr class="${index === 0 ? 'selected' : ''}"><th scope="row">${row.type}</th><td data-label="Earliest age · year"><strong>${row.age}</strong> · ${row.year}</td><td data-label="Lifetime reduction">${reduction(row.reductionPercent)}</td><td data-label="Amount at start">${amount(row.totalAnnual)}<span class="amount-note">${row.bridgeAnnual > 0 ? `Lifetime ${money.format(row.lifetimeAnnual)}/year + unreduced bridge ${money.format(row.bridgeAnnual)}/year until 65` : 'Lifetime pension only'}</span></td></tr>`).join('')}</tbody></table></div>` : `<p class="no-estimate">${options.reason}</p>`;
+    const intro = `Leave in ${input.retirementYear} · ${years(departure.pensionableService)} of service. Service stays fixed after departure.`;
+    const body = rows.length ? `<div class="pension-options">${rows.map(row => `<article class="pension-option"><h4>${row.type}</h4><p class="payment-age">Start at <strong>age ${row.age}</strong> · ${row.year}</p><p class="payment-amount">${amount(row.totalAnnual)}</p><dl class="amount-breakdown">${row.bridgeAnnual > 0 ? `<div><dt>Lifetime · ${reduction(row.reductionPercent)} reduction</dt><dd>${money.format(row.lifetimeAnnual)} / year</dd></div><div><dt>Unreduced bridge · until 65</dt><dd>${money.format(row.bridgeAnnual)} / year</dd></div>` : ''}<div><dt>Lifetime from age ${Math.max(65, row.age)}</dt><dd>${money.format(row.lifetimeAnnual)} / year · ${money.format(row.lifetimeAnnual / 12)} / month</dd></div></dl></article>`).join('')}</div>` : `<p class="no-estimate">${options.reason}</p>`;
     const reducedRow = rows.find(row => row.type === 'Reduced pension');
-    const choiceNote = reducedRow && rows.length > 1 ? `These are alternatives: starting at ${reducedRow.age} leaves ${money.format(reducedRow.lifetimeAnnual)}/year of lifetime pension after 65. The unreduced row assumes you wait to start payments. ` : '';
-    return `<section class="earliest" aria-labelledby="earliest-heading"><div class="earliest-heading"><h3 id="earliest-heading">Earliest pension start</h3><span class="eyebrow">Based on your departure year</span></div><p class="help">${intro} These are estimated payment start ages, not a minimum age for leaving work.</p>${body}<p class="help earliest-note">${choiceNote}Amounts use today's dollars and are rounded. Years showing $0 lifetime pension are skipped. Confirm options with official records.</p></section>`;
+    const choiceNote = reducedRow && rows.length > 1 ? '<p class="help earliest-note"><strong>Two alternative start dates.</strong> Early payments stay reduced after 65.</p>' : '';
+    return `<section class="earliest" aria-labelledby="earliest-heading"><h3 id="earliest-heading">When to start</h3><p class="help">${intro}</p>${body}${choiceNote}</section>`;
   }
   function comparison(input) {
     const rows = scenarios(input);
@@ -60,24 +56,20 @@ const PensionUI = (() => {
       const reason = scenarioReason(r);
       return { year, r, selected, before, after, reason };
     });
-    return `<details class="comparison"><summary id="comparison-heading">Compare nearby retirement years</summary>
-      <p class="help">Same salary and assumptions; only the retirement year changes. “Not estimated” does not mean zero.</p>
-      <div class="table-wrap"><table><thead><tr><th scope="col">Retirement year</th><th scope="col">Approximate age</th><th scope="col">Pensionable service</th><th scope="col">Benefit type</th><th scope="col">Reduction</th><th scope="col">Before-65 amount</th><th scope="col">From-65 lifetime amount</th></tr></thead>
-      <tbody>${cells.map(x => `<tr class="${x.selected ? 'selected' : ''}"><th scope="row">${x.year}${x.selected ? '<span class="selected-note">Your selected year</span>' : ''}</th><td>${x.r.ageAtRetirement}</td><td>${years(x.r.pensionableService)}</td><td>${comparisonLabel(x.r.option)}${x.reason ? `<br><small>${escape(x.reason)}</small>` : ''}</td><td>${reduction(x.r.reductionPercent)}</td><td>${x.before}</td><td>${x.after}</td></tr>`).join('')}</tbody></table></div>
-      <div class="scenario-cards">${cells.map(x => `<article class="scenario-card ${x.selected ? 'selected' : ''}"><h4>${x.year}${x.selected ? ' <span class="selected-note">Your selected year</span>' : ''}</h4><dl><dt>Approximate age</dt><dd>${x.r.ageAtRetirement}</dd><dt>Pensionable service</dt><dd>${years(x.r.pensionableService)}</dd><dt>Benefit type</dt><dd>${comparisonLabel(x.r.option)}</dd>${x.reason ? `<dt>Reason</dt><dd>${escape(x.reason)}</dd>` : ''}<dt>Reduction</dt><dd>${reduction(x.r.reductionPercent)}</dd><dt>Before-65 amount</dt><dd>${x.before}</dd><dt>From-65 lifetime amount</dt><dd>${x.after}</dd></dl></article>`).join('')}</div></details>`;
+    return `<details class="comparison"><summary id="comparison-heading">Compare nearby departure years</summary>
+      <p class="help">Same salary. Payments start in the departure year. “Not estimated” does not mean zero.</p>
+      <div class="scenario-list">${cells.map(x => `<article class="scenario-row ${x.selected ? 'selected' : ''}"><h4>Leave in ${x.year}${x.selected ? '<span class="selected-note">Your selected departure year</span>' : ''}</h4><dl><div><dt>Approximate age</dt><dd>${x.r.ageAtRetirement}</dd></div><div><dt>Pensionable service</dt><dd>${years(x.r.pensionableService)}</dd></div><div><dt>Payment at departure</dt><dd>${comparisonLabel(x.r.option)}</dd></div><div><dt>Lifetime reduction</dt><dd>${reduction(x.r.reductionPercent)}</dd></div><div><dt>Before-65 amount</dt><dd>${x.before}</dd></div><div><dt>From-65 lifetime amount</dt><dd>${x.after}</dd></div></dl>${x.reason ? `<p class="help">${escape(x.reason)}</p>` : ''}</article>`).join('')}</div></details>`;
   }
   function render(result, input) {
     const r = result;
     const immediate = r.retirementStartsImmediately;
     const warningHtml = warnings(r, input).map(w => `<li>${escape(w)}</li>`).join('');
     const service = input.gapYears > 0 ? `<div><dt>Calendar service</dt><dd>${years(r.calendarService)}</dd></div><div><dt>Non-pensionable gap</dt><dd>${years(input.gapYears)}</dd></div><div><dt>Pensionable service</dt><dd>${years(r.pensionableService)}</dd></div><div><dt>Service used for amount</dt><dd>${years(r.serviceUsedForAmount)}</dd></div>` : `<div><dt>Service used for amount</dt><dd>${years(r.serviceUsedForAmount)}</dd></div>`;
-    return `<div class="results-header"><div><p class="eyebrow">02 / Your result</p><h2 id="results-heading">Your estimated pension</h2></div></div>
-      <dl class="result-meta"><div><dt>Pension group</dt><dd>${r.group} (estimated)</dd></div><div><dt>Estimated retirement age</dt><dd>${r.ageAtRetirement}</dd></div><div><dt>Estimated pensionable service</dt><dd>${years(r.pensionableService)}</dd></div><div><dt>Payment at departure</dt><dd>${optionLabel(r.option)}</dd></div></dl>
-      ${earliestTable(input)}
+    return `<div class="results-header"><h2 id="results-heading" tabindex="-1">Your estimated pension</h2></div>
+      <dl class="result-meta"><div><dt>Pension group</dt><dd>${r.group} (estimated)</dd></div><div><dt>Approximate age at departure</dt><dd>${r.ageAtRetirement}</dd></div><div><dt>Estimated pensionable service</dt><dd>${years(r.pensionableService)}</dd></div><div><dt>Payment at departure</dt><dd>${optionLabel(r.option)}</dd></div></dl>
       <div class="option-message ${immediate ? '' : 'muted'}"><p>${optionMessage(r)}</p></div>
-      ${immediate ? `<div class="income-grid ${r.ageAtRetirement >= 65 ? 'single' : ''}">${r.ageAtRetirement < 65 ? incomeCard('Estimated pension before age 65', r.before65Annual, 'Lifetime pension plus temporary bridge benefit.') : ''}${incomeCard('Estimated lifetime pension from age 65', r.after65Annual, 'Bridge benefit ends at 65. CPP, QPP, OAS, and tax are not included.')}</div>` : ''}
-      <ul class="info-list result-warnings">${warningHtml}</ul>
-      <details class="breakdown"><summary id="breakdown-heading">How this estimate was calculated</summary><dl>${service}<div><dt>Estimated AMPE proxy</dt><dd>${money.format(PENSION_CONFIG.DEFAULT_ESTIMATED_AMPE)}</dd></div>${immediate ? `<div><dt>Base lifetime pension</dt><dd>${amount(r.baseLifetimeAnnual)}</dd></div><div><dt>Early-retirement reduction</dt><dd>${reduction(r.reductionPercent)}</dd></div><div><dt>Estimated lifetime pension</dt><dd>${amount(r.estimatedLifetimeAnnual)}</dd></div><div><dt>Temporary bridge benefit to age 65</dt><dd>${r.bridgeIsPayable ? amount(r.estimatedBridgeAnnual) : 'Not payable'}</dd></div>` : ''}</dl>${immediate ? `<p>${r.reductionExplanation} ${r.bridgeIsPayable ? 'The reduction applies to the lifetime pension only; the bridge benefit is unreduced.' : 'No bridge benefit is payable at this age.'}</p>` : ''}</details>${comparison(input)}`;
+      ${earliestOptions(input)}
+      <details class="breakdown"><summary id="breakdown-heading">Calculation &amp; notes</summary><dl>${service}<div><dt>Estimated AMPE proxy</dt><dd>${money.format(PENSION_CONFIG.DEFAULT_ESTIMATED_AMPE)}</dd></div>${immediate ? `<div><dt>Base lifetime pension</dt><dd>${amount(r.baseLifetimeAnnual)}</dd></div><div><dt>Early-retirement reduction</dt><dd>${reduction(r.reductionPercent)}</dd></div><div><dt>Estimated lifetime pension</dt><dd>${amount(r.estimatedLifetimeAnnual)}</dd></div><div><dt>Temporary bridge benefit to age 65</dt><dd>${r.bridgeIsPayable ? amount(r.estimatedBridgeAnnual) : 'Not payable'}</dd></div>` : ''}</dl>${immediate ? `<p>${r.reductionExplanation} ${r.bridgeIsPayable ? 'The reduction applies to the lifetime pension only; the bridge benefit is unreduced.' : 'No bridge benefit is payable at this age.'}</p>` : ''}<p class="help">Rounded amounts. Current salary and AMPE assumptions are held constant. Years rounding to $0 lifetime pension are skipped.</p><ul class="info-list result-warnings">${warningHtml}</ul></details>${comparison(input)}`;
   }
   return { render, money, scenarios };
 })();

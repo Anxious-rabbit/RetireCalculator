@@ -13,7 +13,7 @@
     }
   }
   function showErrors(errors) {
-    const names = { birthYear: 'Birth year', serviceStartYear: 'Federal service start year', retirementYear: 'Planned retirement year', salary: 'Current annual salary', gapYears: 'Non-pensionable gap (years)' };
+    const names = { birthYear: 'Birth year', serviceStartYear: 'Federal service start year', retirementYear: 'Planned departure year', salary: 'Current annual salary', gapYears: 'Non-pensionable gap (years)' };
     const keys = Object.keys(errors);
     summary.innerHTML = `<p><strong>Please correct ${keys.length === 1 ? 'this field' : 'these fields'}:</strong> ${keys.map(key => names[key]).join(', ')}.</p>`;
     summary.hidden = false;
@@ -22,13 +22,14 @@
       document.getElementById(`${key}-error`).textContent = errors[key];
     }
     if (errors.gapYears) document.getElementById('advanced').open = true;
-    summary.focus();
+    form.elements[keys[0]].focus();
   }
   form.addEventListener('submit', event => {
     event.preventDefault();
     clearErrors();
     const checked = PensionValidation.validate(rawValues());
     if (!checked.valid) {
+      document.getElementById('result-status').textContent = '';
       results.hidden = true;
       results.innerHTML = '';
       showErrors(checked.errors);
@@ -37,12 +38,16 @@
     const result = PensionCalculator.estimate(checked.values);
     results.innerHTML = PensionUI.render(result, checked.values);
     results.hidden = false;
+    const heading = document.getElementById('results-heading');
+    heading.focus({ preventScroll: true });
+    document.getElementById('result-status').textContent = `Estimate calculated for departure in ${checked.values.retirementYear}. ${result.group}, approximately ${result.pensionableService.toFixed(1)} years of pensionable service.`;
     results.scrollIntoView({ block: 'start', behavior: 'instant' });
   });
   form.addEventListener('reset', () => {
     clearErrors();
     results.hidden = true;
     results.innerHTML = '';
+    document.getElementById('result-status').textContent = '';
     document.getElementById('advanced').open = false;
     setTimeout(() => document.getElementById('birthYear').focus(), 0);
   });
