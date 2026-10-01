@@ -32,7 +32,7 @@ const evidence = process.env.EVIDENCE_DIR;
           const label = rect('[data-action-label]'), button = rect('#calculate');
           return {
             overflow: document.documentElement.scrollWidth > innerWidth,
-            aligned: cards.every(card => Math.abs(card.top - rect('.input-panel').top) < 0.1),
+            aligned: cards.every(card => Math.abs(card.top - rect('.input-panel').top) < 0.1 && Math.abs(card.bottom - rect('.input-panel').bottom) < 0.1),
             toolsBelow: rect('.comparison-toolbar').top >= rect('.options').bottom,
             periodAbove: rect('period-switch').bottom <= rect('.workspace').top,
             labelCentered: Math.abs(label.x + label.width / 2 - button.x - button.width / 2) < 0.1,
@@ -58,11 +58,28 @@ const evidence = process.env.EVIDENCE_DIR;
     assert.equal(await page.locator('[data-disclosure-panel]:visible').count(), 2);
     await page.getByText('Assumptions & sources', { exact: true }).click();
     assert(await page.getByText('Early payments stay reduced after 65.', { exact: false }).isVisible());
-    await page.locator('.gap-chip').click();
-    await page.locator('#gapYears').press('ArrowUp');
-    assert.equal(await page.locator('#gapYears').inputValue(), '0.5');
+    assert.equal(await page.locator('year-wheel,.year-drum,.gap-chip').count(), 0);
+    await page.getByRole('textbox', { name: 'Time away (years)', exact: true }).fill('1.5');
+    await page.locator('#gapYears').press('Enter');
+    assert.equal(await page.locator('.result-context').innerText(), '23.5 years’ service');
+    await page.locator('#gapYears').fill('1.25');
+    await page.locator('#calculate').click();
+    assert.equal(await page.locator('#gapYears').inputValue(), '1.25');
+    assert.equal(await page.locator('.result-context').innerText(), '23.8 years’ service');
+    for (const invalid of ['99', '-1', 'abc']) {
+      await page.locator('#gapYears').fill(invalid);
+      await page.locator('#calculate').click();
+      assert.equal(await page.locator('#gapYears').getAttribute('aria-invalid'), 'true');
+      assert(await page.locator('#gapYears-error').isVisible());
+      assert.equal(await page.evaluate(() => document.activeElement.id), 'gapYears');
+    }
+    await page.locator('#gapYears').fill('0');
+    await page.locator('#calculate').click();
+    assert.equal(await page.locator('.option').count(), 2);
     await page.getByRole('button', { name: 'Reset', exact: true }).click();
     assert.equal(await page.locator('#birthYear').inputValue(), '');
+    assert.equal(await page.locator('#gapYears').inputValue(), '0');
+    assert(await page.locator('#gapYears').isVisible());
     assert(!(await page.locator('period-switch').isVisible()));
     await page.evaluate(() => setState('error'));
     assert(await page.locator('#error-summary').isVisible());
@@ -81,7 +98,7 @@ const evidence = process.env.EVIDENCE_DIR;
     await toggle.click();
     assert.equal(await page.locator('[data-disclosure-panel]:visible').count(), 2);
     assert.deepEqual(errors, []);
-    console.log('PASS: 12 layouts, panel edges, header period, footer sources, shared disclosure, keyboard, stale/recalculate, wheel, reset/error/recovery, CSS zoom 200%, no JS errors.');
+    console.log('PASS: 12 layouts, panel edges, header period, footer sources, shared disclosure, keyboard, stale/recalculate, decimal gap input/validation, reset/error/recovery, CSS zoom 200%, no JS errors.');
   } finally {
     await browser.close();
   }

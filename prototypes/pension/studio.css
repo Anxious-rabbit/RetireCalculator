@@ -33,6 +33,12 @@ h2{font-size:1em;font-weight:600;letter-spacing:-.025em;line-height:1.5}
 .field{margin-top:var(--s4)}
 .field label{display:block;font-size:.75em;color:var(--muted);font-weight:550;line-height:1.5;margin-bottom:var(--s2)}
 .field input{display:block;width:100%;min-width:0;height:var(--control-height);border:0;background:var(--quiet);padding:var(--s3) var(--s4);font-size:1em;font-weight:500;font-variant-numeric:tabular-nums;transition:background-color 150ms,box-shadow 150ms}
+.gap-field{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:var(--s2) var(--s4);align-items:center}
+.gap-field label{margin:0}
+.gap-field .field-error{grid-column:1/-1;margin-top:0}
+.input-unit{position:relative;min-width:0}
+.input-unit input{padding-inline-end:40px}
+.input-unit>span{position:absolute;inset-inline-end:var(--s4);top:50%;translate:0 -50%;font-size:.75em;color:var(--muted);pointer-events:none}
 .field input:focus{background:#3b3d3f;outline:0;box-shadow:0 0 0 3px #d7d2c655}
 .field input[aria-invalid=true]{box-shadow:0 0 0 2px var(--error)}
 .helper,.privacy{display:none}
@@ -100,16 +106,26 @@ period-switch label{position:relative;min-width:68px;min-height:36px;display:fle
 period-switch input{position:absolute;opacity:0;width:1px;height:1px}
 period-switch label:has(input:checked){font-weight:650;color:#222426}
 period-switch label:has(input:focus-visible){outline:3px solid #d9d5c7;outline-offset:3px}
-.gap-chip{display:grid;grid-template-columns:1fr auto 16px;align-items:center;gap:var(--s2);width:100%;min-height:44px;padding:0;background:transparent;font-size:.75em;line-height:1.5;text-align:left}
-.gap-chip:hover{color:white}
-.chip-value{color:var(--muted);font-variant-numeric:tabular-nums}
-.gap-chip svg{display:block;width:16px;height:16px;transition:transform 200ms}
-.gap-chip[aria-expanded=true] svg{transform:rotate(45deg)}
 ambient-scene{position:fixed;inset:0;display:block;pointer-events:none;z-index:-1;background:radial-gradient(ellipse at 70% 35%,#3b3d3b80,transparent 55%),linear-gradient(135deg,#101113,#202222 48%,#111214 70%)}
 ambient-scene canvas{display:block;width:100%;height:100%;opacity:0}
 .rendered canvas{opacity:1}
 @keyframes panel-in{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
 @media(prefers-reduced-motion:no-preference){disclosure-group[expanded] [data-disclosure-panel],.support details[open]>p{animation:panel-in 200ms var(--motion-ease) both}}
+/* Shared grid row keeps panel tops and bottoms aligned without fixed heights.
+   Details can grow the row naturally; the form action remains at the bottom. */
+@media(min-width:961px){
+  .workspace{row-gap:0;align-items:stretch}
+  .input-panel{grid-column:1;grid-row:1;display:flex;flex-direction:column}
+  .input-panel form{display:flex;flex-direction:column;flex:1}
+  .input-panel calculate-action{margin-top:auto;padding-top:var(--s6)}
+  .results{grid-column:2;grid-row:1/span 3;display:grid;grid-template-rows:subgrid}
+  #output,disclosure-group{display:contents}
+  .options,.placeholder{grid-row:1}
+  .comparison-toolbar,#output>.result-context{grid-row:2}
+  .stale{grid-row:3}
+  .option{display:flex;flex-direction:column}
+  .option>.reduction{margin-top:auto;padding-top:var(--s6)}
+}
 @media(max-width:1050px){.page{padding:32px}.workspace{grid-template-columns:320px minmax(0,1fr)}}
 @media(max-width:960px){.action-thumb svg{transform:rotate(90deg)}.page{padding:24px}.workspace{grid-template-columns:1fr;gap:var(--s6)}.results{padding-top:0}.input-panel{max-width:none}.fields-grid{grid-template-columns:repeat(4,minmax(0,1fr))}.amount{font-size:2.25em}}
 @media(max-width:620px){
