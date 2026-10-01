@@ -9,6 +9,8 @@
 }
 :root[data-size=large]{--body:20px}
 *{box-sizing:border-box}
+html{scrollbar-gutter:stable}
+html.dialog-open{overflow:hidden}
 [hidden]{display:none!important}
 body{margin:0;min-height:100vh;background:var(--page);color:var(--ink);font:var(--body)/1.5 -apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif}
 button,input{font:inherit;color:inherit}
@@ -82,20 +84,13 @@ disclosure-group{display:block}
 .option .breakdown{display:grid;gap:var(--s4);margin-top:var(--s6);font-size:.75em;line-height:1.5}
 .breakdown dt{color:#c0c0bb}
 .breakdown dd{margin-top:var(--s2);font-size:1.25em;font-weight:450}
-.support{grid-column:1/-1;font-size:var(--body)}
-.support summary{list-style:none;display:flex;align-items:center;justify-content:space-between;gap:var(--s3);width:fit-content;min-height:44px;font-size:.75em;line-height:1.5;color:var(--muted)}
-.support summary::-webkit-details-marker{display:none}
-.support summary::after{content:'';display:block;width:16px;height:16px;flex:none;background:linear-gradient(currentColor,currentColor) center/12px 1.5px no-repeat,linear-gradient(currentColor,currentColor) center/1.5px 12px no-repeat;transition:transform 180ms}
-.support details[open]>summary::after{transform:rotate(45deg)}
-.support details p{max-inline-size:76ch;font-size:.75em;color:var(--muted);margin:var(--s2) 0 var(--s4);line-height:1.65}
 .stale{padding:var(--s3) var(--s4);background:var(--warning-bg);color:var(--warning);font-size:.75em;border-radius:12px;margin:var(--s4) var(--panel-inset) 0}
 .stale button{display:none}
 .placeholder{padding:48px var(--panel-inset);margin-top:0;border-radius:var(--panel-radius);background:#222426cc;min-height:296px;display:flex;flex-direction:column;justify-content:center}
 .placeholder h3{font-size:1.5em;font-weight:450;letter-spacing:-.04em}
 .placeholder p{font-size:.875em;color:var(--muted);margin-top:var(--s2)}
 #output> .result-context{margin:var(--s4) var(--panel-inset)}
-footer{display:grid;grid-template-columns:minmax(0,1fr) auto;align-items:center;gap:0 var(--s4);margin-top:var(--s8);color:var(--muted);font-size:.6875em}
-footer>p:last-child{grid-column:2;grid-row:1;text-align:end}
+footer{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:var(--s2) var(--s4);margin-top:var(--s8);color:var(--muted);font-size:.6875em}
 .sr-only{position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%)}
 .skip{position:absolute;top:-100px;left:16px;background:var(--panel);padding:12px;z-index:10}
 .skip:focus{top:12px}
@@ -110,7 +105,7 @@ ambient-scene{position:fixed;inset:0;display:block;pointer-events:none;z-index:-
 ambient-scene canvas{display:block;width:100%;height:100%;opacity:0}
 .rendered canvas{opacity:1}
 @keyframes panel-in{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
-@media(prefers-reduced-motion:no-preference){disclosure-group[expanded] [data-disclosure-panel],.support details[open]>p{animation:panel-in 200ms var(--motion-ease) both}}
+@media(prefers-reduced-motion:no-preference){disclosure-group[expanded] [data-disclosure-panel]{animation:panel-in 200ms var(--motion-ease) both}}
 /* Shared grid row keeps panel tops and bottoms aligned without fixed heights.
    Details can grow the row naturally; the form action remains at the bottom. */
 @media(min-width:961px){
@@ -138,3 +133,25 @@ ambient-scene canvas{display:block;width:100%;height:100%;opacity:0}
 }
 @media(prefers-reduced-motion:reduce){*,*::before,*::after{animation:none!important;transition:none!important;scroll-behavior:auto!important}}
 @media(forced-colors:active){ambient-scene{display:none}button,input,period-switch,.option{outline:1px solid CanvasText}.option{color:CanvasText;background:Canvas}period-switch label:has(input:checked){outline:2px solid Highlight}}
+
+.rules-note{display:flex;align-items:center;gap:var(--s1);margin-inline-start:auto}
+.info-button,.dialog-close{display:grid;place-items:center;flex:none;inline-size:44px;block-size:44px;padding:0;border-radius:50%;background:transparent;color:var(--muted)}
+.info-button:hover,.dialog-close:hover{background:var(--quiet);color:var(--ink)}
+.info-button svg,.dialog-close svg{display:block}
+.info-dialog{width:min(600px,calc(100% - 40px));max-height:min(720px,calc(100dvh - 48px));margin:auto;padding:0;border:0;border-radius:28px;background:#252729;color:var(--ink);box-shadow:0 24px 100px #0009;overflow:hidden}
+.info-dialog[open]{display:flex;flex-direction:column}
+.info-dialog::backdrop{background:#08090bb3;backdrop-filter:blur(8px)}
+.dialog-header{display:flex;align-items:center;justify-content:space-between;gap:var(--s4);padding:var(--s6) var(--s8) var(--s2);flex:none}
+.dialog-header h2{font-size:1.125em;line-height:1.4;letter-spacing:-.025em}
+.dialog-close{background:var(--quiet)}
+.dialog-body{min-height:0;overflow-y:auto;overscroll-behavior:contain;padding:var(--s2) var(--s8) var(--s8);font-size:.875em;line-height:1.65;scrollbar-gutter:stable}
+.dialog-body section+section{margin-top:var(--s6)}
+.dialog-body h3{font-size:1em;font-weight:600;margin-bottom:var(--s2)}
+.dialog-body p{color:#c3c3c0}
+.dialog-body p+p{margin-top:var(--s2)}
+.dialog-body .calculation-context{margin-bottom:var(--s6);color:var(--ink)}
+.dialog-body a{display:inline-block;margin-top:var(--s3);min-height:44px;padding-block:var(--s2)}
+@media(prefers-reduced-motion:no-preference){.info-dialog[open]{animation:dialog-in 180ms var(--motion-ease)}.info-dialog[open]::backdrop{animation:backdrop-in 180ms ease-out}}
+@keyframes dialog-in{from{opacity:0;transform:translateY(8px) scale(.98)}to{opacity:1;transform:none}}
+@keyframes backdrop-in{from{opacity:0}to{opacity:1}}
+@media(max-width:620px){.info-dialog{width:calc(100% - 24px);max-height:calc(100dvh - 24px);border-radius:24px}.dialog-header{padding:var(--s4) var(--s6) var(--s2)}.dialog-body{padding:var(--s2) var(--s6) var(--s6)}}

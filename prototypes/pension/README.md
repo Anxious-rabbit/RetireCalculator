@@ -6,7 +6,7 @@ This is a runnable design candidate, not the released root page. Its source is n
 
 Question: can the comparison remain easy to scan while preserving panel alignment and removing the detached block of controls below the results?
 
-The current direction uses a page-level Monthly/Yearly switch alongside the title. The input panel and both result cards share their top edge. A single row below the results contains pensionable service and the shared Breakdown button. Estimate remains an accessible region heading but is visually hidden. Assumptions, official sources, and the explanation of permanent early-payment reductions live in the page footer; each option still displays its reduction percentage.
+The current direction uses a page-level Monthly/Yearly switch alongside the title. The input panel and both result cards share their top edge. A single row below the results contains pensionable service and the shared Breakdown button. Estimate remains an accessible region heading but is visually hidden. A small information button after the Rules reviewed date opens a native modal dialog containing assumptions, official sources, and the explanation of permanent early-payment reductions; each option still displays its reduction percentage. The footer stays one compact metadata group instead of expanding into paragraphs.
 
 Time away is a permanently visible decimal input, aligned with the right-hand form fields. There is no wheel or expandable editor. Desktop form and result panels share one grid row, aligning both top and bottom edges without a fixed height; expanded details can grow that row.
 
@@ -38,11 +38,14 @@ Optional browser checks, using an already available Playwright installation:
 
 ```sh
 node tests/browser/pension-design.cjs
+node tests/browser/pension-dialog.cjs
 ```
 
 Set `NODE_PATH` if Playwright is supplied outside this repository, `PLAYWRIGHT_CHROMIUM_EXECUTABLE` if using an existing non-default browser binary, and `EVIDENCE_DIR` to save screenshots. `PREVIEW_URL` can select another port/server. No CI workflow or package dependency is added.
 
-Observed in Chromium headless on macOS: 320, 375, 768, 960, 1024, 1440px at default and large text; aligned desktop panel top and bottom edges; header period selector; footer sources; no horizontal overflow; shared disclosure with click/Space/Enter; period and expanded state after recalculation; stale inputs; direct decimal gap input (1.5 and 1.25), invalid/negative/excessive gaps with field focus; reset, validation failure and recovery; CSS zoom 200%. All 31 existing Node tests pass. The browser suite records the checks rather than claiming all production qualities from a screenshot.
+Observed in Chromium headless on macOS: 320, 375, 768, 960, 1024, 1440px at default and large text; aligned desktop panel top and bottom edges; header period selector; footer information button; no horizontal overflow; shared disclosure with click/Space/Enter; period and expanded state after recalculation; stale inputs; direct decimal gap input (1.5 and 1.25), invalid/negative/excessive gaps with field focus; reset, validation failure and recovery; CSS zoom 200%. All 31 existing Node tests pass. The browser suite records the checks rather than claiming all production qualities from a screenshot.
+
+Dialog verification: 320/375/768/1024/1440px at default and large text. Opening and closing leave document height, panel geometry, and page scroll unchanged; long content scrolls inside the bounded dialog. Escape, close button, intentional backdrop click, keyboard focus wrapping and return, reduced motion, empty/reset state and current calculation context pass. The original expanding disclosure increased document height from 780px to 1070px in the test viewport; horizontal movement was not reproduced with that headless browser’s default scrollbar mode. Stable root scrollbar space and scroll locking are covered by the new geometry checks.
 
 Not verified: Safari/Firefox, physical touch devices, native browser-chrome zoom, assistive-technology speech, hardware rendering performance, and a fresh audit of pension rules. The formula regression tests verify existing behavior, not legal or financial completeness. Real-device interaction coverage and production integration remain separate work.
 
