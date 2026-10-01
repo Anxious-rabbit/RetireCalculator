@@ -53,7 +53,7 @@ class PreviewHandler(SimpleHTTPRequestHandler):
             return
         if path in {ENTRY, ENTRY + "index.html"}:
             # The watcher exists only in the local preview response, not the app.
-            body = (ROOT / "index.html").read_text()
+            body = (ROOT / "index.html").read_text(encoding="utf-8")
             body = body.replace('<html lang="en-CA">', '<html lang="en-CA" data-preview="true">')
             body = body.replace("<head>", '<head><base href="/">')
             watcher = '<script src="/scripts/preview-reload.js" data-revision="' + revision() + '"></script>'
