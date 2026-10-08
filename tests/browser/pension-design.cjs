@@ -61,7 +61,7 @@ const evidence = process.env.EVIDENCE_DIR;
     assert(await page.getByText('Early payments stay reduced after 65.', { exact: false }).isVisible());
     await page.getByRole('button', { name: 'Close assumptions', exact: true }).click();
     assert.equal(await page.locator('year-wheel,.year-drum,.gap-chip').count(), 0);
-    await page.getByRole('textbox', { name: 'Time away (years)', exact: true }).fill('1.5');
+    await page.getByRole('textbox', { name: 'Non-pensionable gap (years)', exact: true }).fill('1.5');
     await page.locator('#gapYears').press('Enter');
     assert.equal(await page.locator('.result-context').innerText(), '23.5 years’ service');
     await page.locator('#gapYears').fill('1.25');

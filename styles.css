@@ -30,8 +30,12 @@ h2{font-size:1em;font-weight:600;letter-spacing:-.025em;line-height:1.5}
 .input-panel{padding:var(--panel-inset);border-radius:var(--panel-radius);background:#222426dc;backdrop-filter:blur(20px)}
 .input-title{display:flex;align-items:center;justify-content:space-between;gap:var(--s4);height:44px;margin-bottom:var(--s4)}
 .input-panel h2{height:44px;display:flex;align-items:center;margin:0}
-.fields-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:var(--s4)}
-.fields-grid .field{min-width:0;margin:0}
+.fields-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:var(--s2) var(--s4)}
+/* Shared label tracks keep inputs aligned when full field names wrap. */
+.fields-grid .field{min-width:0;margin:0;display:grid;grid-template-rows:subgrid;grid-row:span 3}
+.fields-grid .field label{margin-bottom:0}
+.fields-grid .field input{grid-row:2}
+.fields-grid .field .field-error{grid-row:3;margin-top:0}
 .field{margin-top:var(--s4)}
 .field label{display:block;font-size:.75em;color:var(--muted);font-weight:550;line-height:1.5;margin-bottom:var(--s2)}
 .field input{display:block;width:100%;min-width:0;height:var(--control-height);border:0;background:var(--quiet);padding:var(--s3) var(--s4);font-size:1em;font-weight:500;font-variant-numeric:tabular-nums;transition:background-color 150ms,box-shadow 150ms}
