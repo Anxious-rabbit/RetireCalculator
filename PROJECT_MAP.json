@@ -1,0 +1,25 @@
+{
+  "schemaVersion": 1,
+  "project": "Federal Public Service Pension Estimator",
+  "repository": "https://github.com/Anxious-rabbit/RetireCalculator",
+  "readingOrder": ["AGENTS.md", "workschedule/README.md", "README.md", "docs/architecture.md"],
+  "taskRecords": {"glob": "workschedule/20*.md", "order": "filename-descending", "alwaysReadStatuses": ["in_progress", "blocked"]},
+  "entrypoints": {"production": "index.html", "development": "scripts/preview.py"},
+  "runtime": {"type": "static-html-css-javascript", "buildRequired": false, "personalData": "browser-memory-only"},
+  "directories": {
+    "js": "Current browser modules plus explicitly retained legacy modules",
+    "scripts": "Local preview tools",
+    "tests": "Node regressions and optional Playwright browser checks",
+    "docs": "Current implementation and maintenance map",
+    "workschedule": "Dated task history, active scopes, and handoffs",
+    "reference/original": "Original specification and website ZIP",
+    "archive": "Ignored local historical evidence and migration manifests",
+    "prototypes/pension": "Historical design notes and redirect to canonical application"
+  },
+  "legacyModulesNotLoadedByProduction": ["js/ui.js", "js/preferences.js"],
+  "checks": {
+    "node": "node --test tests/*.test.js",
+    "browser": ["tests/browser/pension-design.cjs", "tests/browser/pension-dialog.cjs", "tests/browser/pension-release.cjs"]
+  },
+  "collaboration": {"instructions": "AGENTS.md", "taskTemplate": "workschedule/TEMPLATE.md", "filename": "YYYY-MM-DD_HHmmss_agent_topic.md", "timezone": "America/Vancouver"}
+}

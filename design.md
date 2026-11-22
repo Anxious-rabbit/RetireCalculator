@@ -1,5 +1,7 @@
 # Current pension design
 
+Maintenance entry: read `AGENTS.md`, active/latest `workschedule` records, and `docs/architecture.md` first. Historical verification statements below describe their original stages; current test results belong in dated task records.
+
 The owner-approved pension redesign is now the root application. Its graphite palette, atmospheric background, sans-serif heading, aligned form and result panels, shared period switch, and reduced-motion-aware interactions supersede the earlier reading-oriented visual defaults below. Assumptions and all six official sources live in the footer information dialog. The current design uses a fixed dark appearance and browser text zoom; the previous appearance settings are not part of this interface.
 
 Edit `index.html`, `styles.css`, and `js/`. The local preview uses the same source with synthetic review data; the published calculator starts empty. [Preview notes](prototypes/pension/README.md) record the interaction decisions and verification scope. The calculation modules remain unchanged.
