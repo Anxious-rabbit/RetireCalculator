@@ -1,6 +1,6 @@
 # 养老金计算器：协作规则
 
-当前项目根目录：`F:\project(main)\01_工作\养老金计算器-Pension`。所有人、AI、Agent 和修改工具均从此目录工作，不再编辑旧 C: 副本。
+当前项目根目录：`F:\projects\01_work\pension-calculator`。所有人、AI、Agent 和修改工具均从此目录工作，不再编辑旧 C: 副本。
 
 ## 每次开始与写入前
 

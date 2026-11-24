@@ -1,6 +1,6 @@
 # Federal Public Service Pension Estimator
 
-当前项目根目录：`F:\project(main)\01_工作\养老金计算器-Pension`。
+当前项目根目录：`F:\projects\01_work\pension-calculator`。
 
 维护前先读 [AGENTS.md](AGENTS.md) 和 [workschedule](workschedule/README.md)，再检查最新与未完成任务。程序入口是根目录 `index.html`。此项目是浏览器本地运行的静态养老金估算器；无账号、后台、构建步骤，也不上传或保存输入与结果。
 
@@ -28,7 +28,7 @@
 开发预览：
 
 ```powershell
-Set-Location -LiteralPath 'F:\project(main)\01_工作\养老金计算器-Pension'
+Set-Location -LiteralPath 'F:\projects\01_work\pension-calculator'
 python scripts/preview.py
 ```
 
